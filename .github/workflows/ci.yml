@@ -23,18 +23,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      
-      - name: Setup Go environment
-        uses: actions/setup-go@v2.1.4
-        with:
-          # The Go version to download (if necessary) and use. Supports semver spec and ranges.
-          go-version: 1.17
-      
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      
       - name: Build go API
-        run: go build -o api
+        run: go build -o api -v ./...
       
       - name: Run go application
         run: ./api
