@@ -35,4 +35,4 @@ jobs:
         run: cd api/ && go build -o api -v ./...
       
       - name: Run go application
-        run: ./api
+        run: ./api/api
