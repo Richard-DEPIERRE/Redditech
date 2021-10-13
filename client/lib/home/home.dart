@@ -20,7 +20,25 @@ class _HomeComponentState extends State<HomeComponent> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Home"),
+        centerTitle: false,
+        leading: const Padding(
+          padding: EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
+            backgroundColor: Colors.grey,
+          ),
+        ),
+        title: const Text(
+          "Home",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          Icon(icon)
+        ],
       )
     );
   }
