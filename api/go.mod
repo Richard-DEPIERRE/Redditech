@@ -1,4 +1,4 @@
-module github.com/redditech
+module github.com/ClementBolin/redditech
 
 go 1.16
 

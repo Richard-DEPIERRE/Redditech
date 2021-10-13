@@ -1,9 +1,9 @@
-package configs_test
+package tests
 
 import (
 	"testing"
 
-	"github.com/redditech/configs"
+	"github.com/ClementBolin/redditech/configs"
 	"github.com/stretchr/testify/assert"
 )
 
