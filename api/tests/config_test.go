@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ClementBolin/redditech/configs"
+	"redditech/configs"
 	"github.com/stretchr/testify/assert"
 )
 

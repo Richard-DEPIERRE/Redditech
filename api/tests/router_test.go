@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/ClementBolin/redditech/api"
+	"redditech/api"
 	"github.com/stretchr/testify/assert"
 )
 

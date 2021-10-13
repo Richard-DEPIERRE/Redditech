@@ -3,8 +3,8 @@ package main
 import (
 	"strconv"
 
-	"github.com/ClementBolin/redditech/api"
-	"github.com/ClementBolin/redditech/configs"
+	"redditech/api"
+	"redditech/configs"
 )
 
 func main() {
