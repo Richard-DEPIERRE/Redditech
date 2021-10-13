@@ -38,8 +38,7 @@ jobs:
       #   working-directory: ${{ env.api_dir }}
 
       - name: Build go API
-        run: go build
-        working-directory: ${{ env.api_dir }}
+        run: cd ./api && go build
       
       - name: Run tests API
         run: go test -cover ./... -v
