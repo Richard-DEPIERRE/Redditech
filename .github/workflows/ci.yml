@@ -17,6 +17,8 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
+    env:
+      api_dir: ./api
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
@@ -31,8 +33,13 @@ jobs:
         with:
           go-version: 1.17
       
+      # - name: Install pkgs
+      #   run: go get -u ./...
+      #   working-directory: ${{ env.api_dir }}
+
       - name: Build go API
-        run: cd api/ && go build -o api -v ./...
+        run: cd ./api && go build
       
-      - name: Run go application
-        run: ./api/api
+      - name: Run tests API
+        run: go test -cover ./... -v
+        working-directory: ${{ env.api_dir }}

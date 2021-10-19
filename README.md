@@ -24,3 +24,20 @@ After that, you can build and run your API with the following commands:
 ```bash
 cd ./api && go build -o api && ./api
 ```
+
+### Reddit api routes documentation
+
+#### Search suberrit api:
+**Search subberit topic**
+```
+https://api.pushshift.io/reddit/search/submission/?subreddit=learnpython&sort=desc&sort_type=created_utc&after=1523588521&before=1523934121&size=1000
+```
+**params:**
+```
+subreddit=TOPIC
+sort=desc (by default)
+sort_type=created_utc (by default)
+after=TIMESTAMP (optional)
+before=TIMESTAMP (optional)
+size=NUMBER (number of data in array)
+```
