@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -39,7 +40,10 @@ func getSubreddits(c *gin.Context) {
 			errorMessage: "Bad request",
 		})
 	}
-	c.JSON(200, string(resp))
+	m := map[string]interface{}{}
+	json.Unmarshal(resp, &m)
+	log.Println(m)
+	c.JSON(200, m)
 }
 
 func getSubredditsAPI(body *bodyRequestSubreddits) ([]byte, error) {
