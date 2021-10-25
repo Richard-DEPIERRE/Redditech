@@ -40,6 +40,12 @@ dependencies:
   localstorage: ^4.0.0+1
   shared_preferences: ^2.0.8
   flutter_secure_storage: ^4.2.1
+  visa: ^2.0.1
+  simple_auth: ^2.0.10
+  http: ^0.13.4
+  uni_links: ^0.5.1
+  url_launcher: ^6.0.12
+  flutter_web_browser: ^0.15.0
 
 dev_dependencies:
   flutter_test:
