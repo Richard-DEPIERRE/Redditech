@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:redditech/API/api.dart';
 
 class HomeComponent extends StatefulWidget {
   const HomeComponent({Key? key}) : super(key: key);
@@ -15,7 +19,7 @@ class HomeComponent extends StatefulWidget {
 }
 
 class _HomeComponentState extends State<HomeComponent> {
-  List cards = List.generate(20, (i)=> const HomeCards());
+  List<Widget> cards = List<Widget>.generate(20, (i)=> const HomeCards());
 
   @override
   Widget build(BuildContext context) {
@@ -48,16 +52,19 @@ class _HomeComponentState extends State<HomeComponent> {
                 size: 30,
               ),
               tooltip: 'Search',
-              onPressed: () {
-
-              },
+              onPressed: () async {
+                  final res = await getAutocomplete();
+                  final result = await showSearch(
+                      context: context, delegate: SubredditSearch(subRedditList: res));
+                  print(result);
+                },
             ),
           )
         ],
       ),
-      // body: ListView(
-      //   children: cards,
-      // ),
+      body: ListView(
+        children: cards,
+      ),
     );
   }
 }
@@ -128,4 +135,120 @@ class HomeCards extends StatelessWidget {
       ),
     );
   }
+}
+
+class SubredditSearch extends SearchDelegate<String> {
+  SubredditSearch({Key? key, required List<Map<String, dynamic>> this.subRedditList});
+  // ignore: prefer_typing_uninitialized_variables
+  final subRedditList;
+
+  @override
+  List<Widget> buildActions(BuildContext context) => [
+        IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            if (query.isEmpty) {
+              close(context, "Done");
+            } else {
+              query = '';
+              showSuggestions(context);
+            }
+          },
+        )
+      ];
+
+  @override
+  Widget buildLeading(BuildContext context) => IconButton(
+        onPressed: () {
+          close(context, "close");
+        },
+        icon: Icon(Icons.arrow_back),
+      );
+
+  @override
+  Widget buildResults(BuildContext context) => Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.location_city,
+            size: 120,
+          ),
+          const SizedBox(
+            height: 48,
+          ),
+          Text(
+            query,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 64,
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        ],
+      ));
+
+  @override
+  Widget buildSuggestions(BuildContext context) => FutureBuilder<List<Map<String, dynamic>>>(
+    future: getAutocomplete(query: query),
+    builder: (context, snapshot) {
+      switch(snapshot.connectionState) {
+        case ConnectionState.waiting:
+          return const Center(child: CircularProgressIndicator(),);
+        default:
+          return buildSuggestionsSuccess(snapshot.data);
+      }
+    },
+  );
+
+  Widget buildSuggestionsSuccess(List<Map<String, dynamic>>? subReddits) => ListView.builder(
+        itemCount: subReddits!.length,
+        itemBuilder: (context, index) {
+          final suggestion = subReddits[index];
+          var queryText = "";
+          var remainingText = "";
+          if (suggestion['name'] != null) {
+            queryText = suggestion['name'].substring(0, query.length + 2);
+            remainingText = suggestion['name'].substring(query.length + 2);
+          } else {
+            queryText = "";
+            remainingText = "";
+          }
+          final img = suggestion['img'];
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ListTile(
+              leading: CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(img),
+                backgroundColor: Colors.grey,
+              ),
+              title: RichText(
+                text: TextSpan(
+                  text: queryText,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: remainingText,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () {
+                query = suggestion['name'];
+                close(context, suggestion['name']);
+              },
+            ),
+          );
+        },
+      );
 }

@@ -40,7 +40,7 @@ class _LoginComponentState extends State<LoginComponent> {
   }
   void loginAction() async {
     try {
-      const url = "https://www.reddit.com/api/v1/authorize?response_type=token&client_id=D6oEdfHilywOWA0-QdA-6g&redirect_uri=https://richardepitech.com&scope=identity&state=https";
+      const url = "https://www.reddit.com/api/v1/authorize?response_type=token&client_id=D6oEdfHilywOWA0-QdA-6g&redirect_uri=https://richardepitech.com&scope=identity,read,account,creddits,edit,flair,history,livemanage,modconfig,report,save,submit,subscribe,vote&state=https";
       if (await canLaunch(url)) {
         await launch(url);
       } else {
