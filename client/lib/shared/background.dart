@@ -37,9 +37,12 @@ class BackgroundComponent extends StatelessWidget {
                       ),
                       color: Colors.white,
                       elevation: 4.0,
-                      child: component,
+                      // child: component,
                     ),
                   ),
+                ),
+                Container(
+                  child: component,
                 )
               ]
             ),
