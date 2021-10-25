@@ -1,0 +1,5 @@
+{
+    "clientId": "CLIENT_ID",
+    "secretToken": "SECRET_TOKEN",
+    "port": 8080
+}
