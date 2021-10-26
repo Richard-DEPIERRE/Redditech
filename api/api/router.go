@@ -18,6 +18,7 @@ func SetupRouter() *gin.Engine {
 	router.Use(AuthMiddleware)
 	router.GET("/get/me", aboutMe)
 	router.GET("/get/suberredit/list", getListSubreddit)
+	router.GET("/get/suberredit/about", getSuberedditAbout)
 
 	return router
 }
