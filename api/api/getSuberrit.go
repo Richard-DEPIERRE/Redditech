@@ -25,19 +25,19 @@ func getSubreddits(c *gin.Context) {
 	jsonData, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(400, &ErrorResponse{
-			errorMessage: "Bad request",
+			ErrorMessage: "Bad request",
 		})
 	}
 	json.Unmarshal(jsonData, body)
 	if body.Topic == "" || body.Size <= 0 {
 		c.JSON(400, &ErrorResponse{
-			errorMessage: "Bad request",
+			ErrorMessage: "Bad request",
 		})
 	}
 	resp, err := getSubredditsAPI(body)
 	if err != nil {
 		c.JSON(400, &ErrorResponse{
-			errorMessage: "Bad request",
+			ErrorMessage: "Bad request",
 		})
 	}
 	m := map[string]interface{}{}
