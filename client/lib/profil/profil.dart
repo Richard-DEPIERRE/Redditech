@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:redditech/shared/background.dart';
 
-/// @description: Profil component, display many informations
-/// about the user
 class ProfilComponent extends StatefulWidget {
   const ProfilComponent({Key? key}): super(key:key);
 
@@ -14,16 +12,13 @@ class _ProfilComponent extends State<ProfilComponent> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: BackgroundComponent(component: innerText(),),
+      body: BackgroundComponent(component: InnerText(),),
     );
   }
 }
 
-/// Container with number of follower
-/// account status (private public)
-// ignore: camel_case_types
-class innerText extends StatelessWidget {
-  const innerText({
+class InnerText extends StatelessWidget {
+  const InnerText({
     Key? key,
   }) : super(key: key);
 

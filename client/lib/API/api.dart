@@ -1,17 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<List<Map<String, dynamic>>> getAutocomplete({query = "a"}) async {
-  print("starting autocomplete");
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('access_token');
-  print("token : " + token.toString());
-  print("query : " + query);
   String url = "https://oauth.reddit.com/api/subreddit_autocomplete_v2?query=" + query;
-  print("url : " + url);
   http.Response response = await http.get(
     Uri.parse(url),
     headers: {

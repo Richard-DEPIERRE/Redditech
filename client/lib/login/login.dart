@@ -5,9 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
 
 bool _initialUriIsHandled = false;
 
@@ -22,9 +20,6 @@ class _LoginComponentState extends State<LoginComponent> {
   final FlutterAppAuth appAuth = FlutterAppAuth();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   late StreamSubscription _sub;
-  late Uri _latestUri;
-  Uri? _initialUri;
-  Object? _err;
 
   @override
   void initState() {
@@ -47,6 +42,7 @@ class _LoginComponentState extends State<LoginComponent> {
         throw "Could not launch $url";
       }
     } catch(err) {
+      // ignore: avoid_print
       print(err);
     }
   }
@@ -54,34 +50,22 @@ class _LoginComponentState extends State<LoginComponent> {
   Future<void> _handleInitialUri() async {
     if (!_initialUriIsHandled) {
       _initialUriIsHandled = true;
-      print('_handleInitialUri called');
       try {
         final uri = await getInitialUri();
-        if (uri == null) {
-          print('no initial uri');
-        } else {
-          print('got initial uri: $uri');
+        if (uri != null) {
           String linkStr = uri.toString();
-          print('I am here : $linkStr');
           if (linkStr.contains('access_token') &&
               uri.toString().contains("https://richardepitech.com")) {
             var accessToken = linkStr.split('access_token=')[1].split('&')[0];
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('access_token', accessToken);
             _sub.cancel();
-            print('accessToken $accessToken');
-            print("User logged in!");
             Navigator.pushNamed(context, '/home');
           }
         }
         if (!mounted) return;
-        setState(() => _initialUri = uri);
-      } on PlatformException {
-        print('falied to get initial uri');
-      } on FormatException catch (err) {
+      } catch (err) {
         if (!mounted) return;
-        print('malformed initial uri');
-        setState(() => _err = err);
       }
     }
   }
@@ -89,22 +73,8 @@ class _LoginComponentState extends State<LoginComponent> {
     if (!kIsWeb) {
       _sub = uriLinkStream.listen((Uri? uri) {
         if (!mounted) return;
-        print('got uri2: $uri');
-        setState(() {
-          _latestUri = uri!;
-          _err = null;
-        });
       }, onError: (Object err) {
         if (!mounted) return;
-        print('got err: $err');
-        setState(() {
-          _latestUri = Uri.parse(null.toString());
-          if (err is FormatException) {
-            _err = err;
-          } else {
-            _err = null;
-          }
-        });
       });
     }
   }
