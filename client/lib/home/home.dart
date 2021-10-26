@@ -1,22 +1,10 @@
-// ignore: unused_import
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// ignore: unused_import
-import 'package:http/http.dart' as http;
 import 'package:redditech/API/api.dart';
 
 class HomeComponent extends StatefulWidget {
   const HomeComponent({Key? key}) : super(key: key);
 
-  void checkUser() async {
-    const storage = FlutterSecureStorage();
-    final code = await storage.read(key: 'code');
-    // ignore: avoid_print
-    print(code);
-  }
   @override
   State<HomeComponent> createState() => _HomeComponentState();
 }
@@ -57,9 +45,7 @@ class _HomeComponentState extends State<HomeComponent> {
               tooltip: 'Search',
               onPressed: () async {
                   final res = await getAutocomplete();
-                  final result = await showSearch(
-                      context: context, delegate: SubredditSearch(subRedditList: res));
-                  print(result);
+                  await showSearch(context: context, delegate: SubredditSearch(subRedditList: res));
                 },
             ),
           )
@@ -141,14 +127,13 @@ class HomeCards extends StatelessWidget {
 }
 
 class SubredditSearch extends SearchDelegate<String> {
-  SubredditSearch({Key? key, required List<Map<String, dynamic>> this.subRedditList});
-  // ignore: prefer_typing_uninitialized_variables
-  final subRedditList;
+  SubredditSearch({Key? key, required this.subRedditList});
+  List<Map<String, dynamic>> subRedditList = [];
 
   @override
   List<Widget> buildActions(BuildContext context) => [
         IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: () {
             if (query.isEmpty) {
               close(context, "Done");

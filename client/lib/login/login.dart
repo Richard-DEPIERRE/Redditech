@@ -5,10 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-// ignore: unused_import
-import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
 
 bool _initialUriIsHandled = false;
 
@@ -23,12 +20,6 @@ class _LoginComponentState extends State<LoginComponent> {
   final FlutterAppAuth appAuth = FlutterAppAuth();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   late StreamSubscription _sub;
-  // ignore: unused_field
-  late Uri _latestUri;
-  // ignore: unused_field
-  Uri? _initialUri;
-  // ignore: unused_field
-  Object? _err;
 
   @override
   void initState() {
@@ -59,42 +50,22 @@ class _LoginComponentState extends State<LoginComponent> {
   Future<void> _handleInitialUri() async {
     if (!_initialUriIsHandled) {
       _initialUriIsHandled = true;
-      // ignore: avoid_print
-      print('_handleInitialUri called');
       try {
         final uri = await getInitialUri();
-        if (uri == null) {
-      // ignore: avoid_print
-          print('no initial uri');
-        } else {
-      // ignore: avoid_print
-          print('got initial uri: $uri');
+        if (uri != null) {
           String linkStr = uri.toString();
-      // ignore: avoid_print
-          print('I am here : $linkStr');
           if (linkStr.contains('access_token') &&
               uri.toString().contains("https://richardepitech.com")) {
             var accessToken = linkStr.split('access_token=')[1].split('&')[0];
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('access_token', accessToken);
             _sub.cancel();
-      // ignore: avoid_print
-            print('accessToken $accessToken');
-      // ignore: avoid_print
-            print("User logged in!");
             Navigator.pushNamed(context, '/home');
           }
         }
         if (!mounted) return;
-        setState(() => _initialUri = uri);
-      } on PlatformException {
-      // ignore: avoid_print
-        print('falied to get initial uri');
-      } on FormatException catch (err) {
+      } catch (err) {
         if (!mounted) return;
-      // ignore: avoid_print
-        print('malformed initial uri');
-        setState(() => _err = err);
       }
     }
   }
@@ -102,24 +73,8 @@ class _LoginComponentState extends State<LoginComponent> {
     if (!kIsWeb) {
       _sub = uriLinkStream.listen((Uri? uri) {
         if (!mounted) return;
-      // ignore: avoid_print
-        print('got uri2: $uri');
-        setState(() {
-          _latestUri = uri!;
-          _err = null;
-        });
       }, onError: (Object err) {
         if (!mounted) return;
-      // ignore: avoid_print
-        print('got err: $err');
-        setState(() {
-          _latestUri = Uri.parse(null.toString());
-          if (err is FormatException) {
-            _err = err;
-          } else {
-            _err = null;
-          }
-        });
       });
     }
   }
