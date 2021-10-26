@@ -27,12 +27,17 @@ class _HomeComponentState extends State<HomeComponent> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: false,
-        leading: const Padding(
-          padding: EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
-            backgroundColor: Colors.grey,
+        leading: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/profil');
+            },
+            child: const CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
+              backgroundColor: Colors.grey,
+            ),
           ),
         ),
         title: const Text(
@@ -57,6 +62,7 @@ class _HomeComponentState extends State<HomeComponent> {
                   final result = await showSearch(
                       context: context, delegate: SubredditSearch(subRedditList: res));
                   print(result);
+                  Navigator.pushNamed(context, '/subreddit');
                 },
             ),
           )
