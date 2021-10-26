@@ -1,8 +1,10 @@
+// ignore: unused_import
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// ignore: unused_import
 import 'package:http/http.dart' as http;
 import 'package:redditech/API/api.dart';
 
@@ -12,6 +14,7 @@ class HomeComponent extends StatefulWidget {
   void checkUser() async {
     const storage = FlutterSecureStorage();
     final code = await storage.read(key: 'code');
+    // ignore: avoid_print
     print(code);
   }
   @override
@@ -162,7 +165,7 @@ class SubredditSearch extends SearchDelegate<String> {
         onPressed: () {
           close(context, "close");
         },
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
       );
 
   @override
