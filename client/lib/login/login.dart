@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:draw/draw.dart';
-import 'package:flutter_web_auth/flutter_web_auth.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uni_links/uni_links.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+bool _initialUriIsHandled = false;
 
 class LoginComponent extends StatefulWidget {
   const LoginComponent({Key? key}) : super(key: key);
@@ -13,23 +17,67 @@ class LoginComponent extends StatefulWidget {
 }
 
 class _LoginComponentState extends State<LoginComponent> {
-  FlutterAppAuth appAuth = FlutterAppAuth();
-  var red = Reddit.createInstalledFlowInstance(
-    clientId: "D6oEdfHilywOWA0-QdA-6g",
-    userAgent: "EpitechRed",
-    redirectUri: Uri.parse("foobar://sucess"),
-  );
+  final FlutterAppAuth appAuth = FlutterAppAuth();
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  late StreamSubscription _sub;
 
-  void loginAction() async {
-    final authUrl = red.auth.url(["*"], "EpitechRed", compactLogin: true);
-    final result = await FlutterWebAuth.authenticate(url: authUrl.toString(), callbackUrlScheme: "foobar");
-    String? code = Uri.parse(result).queryParameters['code'];
-    const storage = FlutterSecureStorage();
-    await storage.write(key: 'code', value: code.toString());
-    await red.auth.authorize(code.toString());
-    Navigator.pushNamed(context, '/home');
+  @override
+  void initState() {
+    super.initState();
+    _handleIncomingLinks();
+    _handleInitialUri();
   }
 
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+  void loginAction() async {
+    try {
+      const url = "https://www.reddit.com/api/v1/authorize?response_type=token&client_id=D6oEdfHilywOWA0-QdA-6g&redirect_uri=https://richardepitech.com&scope=identity,read,account,creddits,edit,flair,history,livemanage,modconfig,report,save,submit,subscribe,vote&state=https";
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw "Could not launch $url";
+      }
+    } catch(err) {
+      // ignore: avoid_print
+      print(err);
+    }
+  }
+
+  Future<void> _handleInitialUri() async {
+    if (!_initialUriIsHandled) {
+      _initialUriIsHandled = true;
+      try {
+        final uri = await getInitialUri();
+        if (uri != null) {
+          String linkStr = uri.toString();
+          if (linkStr.contains('access_token') &&
+              uri.toString().contains("https://richardepitech.com")) {
+            var accessToken = linkStr.split('access_token=')[1].split('&')[0];
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('access_token', accessToken);
+            _sub.cancel();
+            Navigator.pushNamed(context, '/home');
+          }
+        }
+        if (!mounted) return;
+      } catch (err) {
+        if (!mounted) return;
+      }
+    }
+  }
+  void _handleIncomingLinks() {
+    if (!kIsWeb) {
+      _sub = uriLinkStream.listen((Uri? uri) {
+        if (!mounted) return;
+      }, onError: (Object err) {
+        if (!mounted) return;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
