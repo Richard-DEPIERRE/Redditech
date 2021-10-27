@@ -39,16 +39,48 @@ response example:
         ...
 ```
 ---
-**About me**
+#### About me
 
 url: ```localhost:8080/get/me```
-**body request:**
+body request:
 ```json
 {
   "token": "ACCESS_TOKEN",
 }
 ```
-**Response example:**
+Response example:
+```
+{
+
+}
+```
+
+#### About my friends
+
+url: ```localhost:8080/get/me/friends```
+body request:
+```json
+{
+  "token": "ACCESS_TOKEN",
+}
+```
+Response example:
+```
+{
+
+}
+```
+
+#### About my trophies
+
+url: ```localhost:8080/get/me/trophies```
+body request:
+```json
+{
+  "token": "ACCESS_TOKEN",
+}
+```
+Response example:
 ```
 {
 
@@ -56,33 +88,33 @@ url: ```localhost:8080/get/me```
 ```
 
 ---
-**Get list subreddit with name**
+
+#### Get list subreddit with name
 
 url: ```localhost:8080/get/suberredit/list```
-**body request:**
+body request:
 ```json
 {
   "subreddit": "r/SUBREDDIT_NAME",
 }
 ```
-**Response example:**
+Response example:
 ```
 {
 
 }
 ```
 
----
-**Get informations about a subreddit**
+#### Get informations about a subreddit
 
 url: ```localhost:8080/get/me```
-**body request:**
+body request:
 ```json
 {
   "subreddit": "r/SUBREDDIT_NAME",
 }
 ```
-**Response example:**
+Response example:
 ```
 {
 
