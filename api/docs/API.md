@@ -16,8 +16,9 @@ You can get your **access_token** with the reddit API. [follow this link for mor
 ### GET Request
 
 **Search subberedit topic:**
+
 **url**: ```localhost:8080/get/subreddits```
-body: 
+**body request:**
 ```json
 {
   "topic": "TOPIC_SEARCH",
@@ -36,4 +37,54 @@ response example:
             ...
         },
         ...
+```
+---
+**About me**
+
+url: ```localhost:8080/get/me```
+**body request:**
+```json
+{
+  "token": "ACCESS_TOKEN",
+}
+```
+**Response example:**
+```
+{
+
+}
+```
+
+---
+**Get list subreddit with name**
+
+url: ```localhost:8080/get/suberredit/list```
+**body request:**
+```json
+{
+  "subreddit": "r/SUBREDDIT_NAME",
+}
+```
+**Response example:**
+```
+{
+
+}
+```
+
+---
+**Get informations about a subreddit**
+
+url: ```localhost:8080/get/me```
+**body request:**
+```json
+{
+  "subreddit": "r/SUBREDDIT_NAME",
+}
+```
+**Response example:**
+```
+{
+
+}
 ```
