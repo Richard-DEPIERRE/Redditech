@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:redditech/API/api.dart';
+import 'package:redditech/Subreddit/subreddit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeComponent extends StatefulWidget {
   const HomeComponent({Key? key}) : super(key: key);
@@ -14,6 +17,7 @@ class _HomeComponentState extends State<HomeComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final LocalStorage storage = LocalStorage('redditech');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -52,7 +56,15 @@ class _HomeComponentState extends State<HomeComponent> {
                   final res = await getAutocomplete();
                   final result = await showSearch(
                       context: context, delegate: SubredditSearch(subRedditList: res));
-                  Navigator.pushNamed(context, '/subreddit');
+                  print("result : " + result.toString());
+                  storage.setItem('subreddit', result.toString());
+                  print("storage : " + storage.getItem('subreddit'));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubRedditComponent(name: result.toString()),
+                    )
+                  );
                 },
             ),
           )

@@ -1,19 +1,16 @@
 import 'dart:convert';
 
+import 'package:draw/draw.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:redditech/API/api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubRedditComponent extends StatefulWidget {
-  const SubRedditComponent({Key? key}) : super(key: key);
-
-  void checkUser() async {
-    const storage = FlutterSecureStorage();
-    final code = await storage.read(key: 'code');
-    print(code);
-  }
+  const SubRedditComponent({Key? key, required this.name}) : super(key: key);
+  final String name;
   @override
   State<SubRedditComponent> createState() => _SubRedditComponentState();
 }
@@ -21,11 +18,46 @@ class SubRedditComponent extends StatefulWidget {
 class _SubRedditComponentState extends State<SubRedditComponent> {
   List<Widget> cards = List<Widget>.generate(20, (i)=> const HomeCards());
 
+
   @override
   Widget build(BuildContext context) {
+    String name = widget.name;
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    return FutureBuilder<Map<String, dynamic>>(
+      future: getSubReddit(name),
+      builder: (context, snapshot) {
+        switch(snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return const Center(child: CircularProgressIndicator(),);
+          default:
+            return Subredd(name: name, height: height, width: width, subreddit: snapshot.data);
+        }
+    }
+  );}
+}
+
+class Subredd extends StatelessWidget {
+  const Subredd({
+    Key? key,
+    required this.name,
+    required this.height,
+    required this.width,
+    required this.subreddit
+  }) : super(key: key);
+
+  final String name;
+  final double height;
+  final double width;
+  final Map<String, dynamic>? subreddit;
+
+  @override
+  Widget build(BuildContext context) {
+    final backImage = (subreddit != null && subreddit!['banner_background_image'] != '') ? subreddit!['banner_background_image'] : "https://i.imgur.com/mzL45Qy.png";
+    final comImage = (subreddit != null && subreddit!['community_icon'] != '') ? subreddit!['community_icon'] : "https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png";
+    final title = (subreddit != null && subreddit!['title'] != '') ? subreddit!['title'] : "Title unavailable";
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         centerTitle: false,
@@ -37,13 +69,6 @@ class _SubRedditComponentState extends State<SubRedditComponent> {
             },
             icon: const Icon(Icons.arrow_back),
           ),    
-        ),
-        title: const Text(
-          "Home",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
         ),
         actions: [
           Padding(
@@ -61,43 +86,74 @@ class _SubRedditComponentState extends State<SubRedditComponent> {
         ],
       ),
       body: SingleChildScrollView(
-      child: Column(
-        children: [
-          SingleChildScrollView(
-            child: Stack(
-              children: [
-                const Image(
-                  image: NetworkImage("https://i.imgur.com/mzL45Qy.png")
-                ),
-                Container(
-                  alignment: Alignment.topCenter,
-                  padding: EdgeInsets.only(
-                      top: height * 0.50,
-                      right: 0.0,
-                      left: 0.0),
-                  child: SizedBox(
-                    height: height,
-                    width: width,
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
+        child: Column(
+          children: [
+            SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Stack(
+                    children: [
+                      Image(
+                        image: NetworkImage(
+                          backImage
+                        ),
+                        height: height * 0.7,
+                        fit:BoxFit.fitHeight  
                       ),
-                      color: Colors.white,
-                      elevation: 4.0,
-                      // child: component,
+                      Positioned(
+                        top: 100,
+                        left: 50,
+                        width: width - 100,
+                        height: 250,
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(comImage),
+                            ),
+                            Text(
+                              title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 26,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ]
+                  ),
+                  Container(
+                    alignment: Alignment.topCenter,
+                    padding: EdgeInsets.only(
+                        top: height * 0.50,
+                        right: 0.0,
+                        left: 0.0),
+                    child: SizedBox(
+                      height: height,
+                      width: width,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        color: Colors.white,
+                        elevation: 4.0,
+                        // child: component,
+                      ),
                     ),
                   ),
-                ),
-                // Container(
-                //   child: component,
-                // )
-              ]
+                  // Container(
+                  //   child: component,
+                  // )
+                ]
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );}
+    );
+  }
 }
 
 class HomeCards extends StatelessWidget {
