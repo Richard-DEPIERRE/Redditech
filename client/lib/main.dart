@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LoginComponent(),
         '/home': (context) => const HomeComponent(),
         '/profil': (context) => const ProfilComponent(),
-        '/subreddit': (context) => const SubRedditComponent()
       },
     );
   }

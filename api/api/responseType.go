@@ -1,5 +1,6 @@
 package api
 
 type ErrorResponse struct {
-	errorMessage string `json:"error"`
+	ErrorMessage string `json:"error"`
+	Code         int    `json:"code"`
 }
