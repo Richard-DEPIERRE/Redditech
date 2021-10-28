@@ -1,19 +1,13 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
+import 'package:localstorage/localstorage.dart';
 import 'package:redditech/API/api.dart';
+import 'package:redditech/Subreddit/subreddit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeComponent extends StatefulWidget {
   const HomeComponent({Key? key}) : super(key: key);
 
-  void checkUser() async {
-    const storage = FlutterSecureStorage();
-    final code = await storage.read(key: 'code');
-    print(code);
-  }
   @override
   State<HomeComponent> createState() => _HomeComponentState();
 }
@@ -23,16 +17,22 @@ class _HomeComponentState extends State<HomeComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final LocalStorage storage = LocalStorage('redditech');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: false,
-        leading: const Padding(
-          padding: EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
-            backgroundColor: Colors.grey,
+        leading: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/profil');
+            },
+            child: const CircleAvatar(
+              radius: 20,
+              backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
+              backgroundColor: Colors.grey,
+            ),
           ),
         ),
         title: const Text(
@@ -56,7 +56,15 @@ class _HomeComponentState extends State<HomeComponent> {
                   final res = await getAutocomplete();
                   final result = await showSearch(
                       context: context, delegate: SubredditSearch(subRedditList: res));
-                  print(result);
+                  print("result : " + result.toString());
+                  storage.setItem('subreddit', result.toString());
+                  print("storage : " + storage.getItem('subreddit'));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubRedditComponent(name: result.toString()),
+                    )
+                  );
                 },
             ),
           )
@@ -138,14 +146,13 @@ class HomeCards extends StatelessWidget {
 }
 
 class SubredditSearch extends SearchDelegate<String> {
-  SubredditSearch({Key? key, required List<Map<String, dynamic>> this.subRedditList});
-  // ignore: prefer_typing_uninitialized_variables
-  final subRedditList;
+  SubredditSearch({Key? key, required this.subRedditList});
+  List<Map<String, dynamic>> subRedditList = [];
 
   @override
   List<Widget> buildActions(BuildContext context) => [
         IconButton(
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
           onPressed: () {
             if (query.isEmpty) {
               close(context, "Done");
@@ -162,7 +169,7 @@ class SubredditSearch extends SearchDelegate<String> {
         onPressed: () {
           close(context, "close");
         },
-        icon: Icon(Icons.arrow_back),
+        icon: const Icon(Icons.arrow_back),
       );
 
   @override

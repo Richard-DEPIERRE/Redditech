@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redditech/Subreddit/subreddit.dart';
 import 'package:redditech/profil/profil.dart';
 import 'login/login.dart';
 import 'home/home.dart';
@@ -15,14 +16,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Redditech',
-      initialRoute: '/profil',
+      initialRoute: '/',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       routes: {
         '/': (context) => const LoginComponent(),
         '/home': (context) => const HomeComponent(),
-        '/profil': (context) => const ProfilComponent()
+        '/profil': (context) => const ProfilComponent(),
       },
     );
   }

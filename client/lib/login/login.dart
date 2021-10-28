@@ -1,13 +1,13 @@
+import 'package:draw/draw.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
 
 bool _initialUriIsHandled = false;
 
@@ -22,15 +22,34 @@ class _LoginComponentState extends State<LoginComponent> {
   final FlutterAppAuth appAuth = FlutterAppAuth();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   late StreamSubscription _sub;
-  late Uri _latestUri;
-  Uri? _initialUri;
-  Object? _err;
+  var red = Reddit.createInstalledFlowInstance(
+    clientId: "wN2TD0vUX0aKLgvR_aPFxw",
+    redirectUri: Uri.parse("foobar://sucess"),
+    userAgent: "EpitechRed2:1234:1.0 (by /u/uichaa>)",
+  );
+
+  void loginAction() async {
+    try {
+      final authUrl = red.auth.url(["*"], "EpitechRed2");
+      final result = await FlutterWebAuth.authenticate(url: authUrl.toString(), callbackUrlScheme: "foobar");
+      print(result);
+      String? code = Uri.parse(result).queryParameters['code'];
+      const storage = FlutterSecureStorage();
+      await storage.write(key: 'code', value: code.toString());
+      await red.auth.authorize(code.toString());
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.setString('access_token', red.auth.credentials.accessToken);
+      Navigator.pushNamed(context, '/home');
+    } catch(err) {
+      print(err);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    _handleIncomingLinks();
-    _handleInitialUri();
+    // _handleIncomingLinks();
+    // _handleInitialUri();
   }
 
   @override
@@ -38,76 +57,55 @@ class _LoginComponentState extends State<LoginComponent> {
     _sub.cancel();
     super.dispose();
   }
-  void loginAction() async {
-    try {
-      const url = "https://www.reddit.com/api/v1/authorize?response_type=token&client_id=D6oEdfHilywOWA0-QdA-6g&redirect_uri=https://richardepitech.com&scope=identity,read,account,creddits,edit,flair,history,livemanage,modconfig,report,save,submit,subscribe,vote&state=https";
-      if (await canLaunch(url)) {
-        await launch(url);
-      } else {
-        throw "Could not launch $url";
-      }
-    } catch(err) {
-      print(err);
-    }
-  }
+  // void loginAction() async {
+  //   try {
+  //     const url = "https://www.reddit.com/api/v1/authorize?response_type=token&client_id=wN2TD0vUX0aKLgvR_aPFxw&redirect_uri=https://richardepitech.com&scope=identity,read,account,creddits,edit,flair,history,livemanage,modconfig,report,save,submit,subscribe,vote&state=https";
+  //     if (await canLaunch(url)) {
+  //       await launch(url);
+  //     } else {
+  //       throw "Could not launch $url";
+  //     }
+  //   } catch(err) {
+  //     // ignore: avoid_print
+  //     print(err);
+  //   }
+  // }
 
-  Future<void> _handleInitialUri() async {
-    if (!_initialUriIsHandled) {
-      _initialUriIsHandled = true;
-      print('_handleInitialUri called');
-      try {
-        final uri = await getInitialUri();
-        if (uri == null) {
-          print('no initial uri');
-        } else {
-          print('got initial uri: $uri');
-          String linkStr = uri.toString();
-          print('I am here : $linkStr');
-          if (linkStr.contains('access_token') &&
-              uri.toString().contains("https://richardepitech.com")) {
-            var accessToken = linkStr.split('access_token=')[1].split('&')[0];
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('access_token', accessToken);
-            _sub.cancel();
-            print('accessToken $accessToken');
-            print("User logged in!");
-            Navigator.pushNamed(context, '/home');
-          }
-        }
-        if (!mounted) return;
-        setState(() => _initialUri = uri);
-      } on PlatformException {
-        print('falied to get initial uri');
-      } on FormatException catch (err) {
-        if (!mounted) return;
-        print('malformed initial uri');
-        setState(() => _err = err);
-      }
-    }
-  }
-  void _handleIncomingLinks() {
-    if (!kIsWeb) {
-      _sub = uriLinkStream.listen((Uri? uri) {
-        if (!mounted) return;
-        print('got uri2: $uri');
-        setState(() {
-          _latestUri = uri!;
-          _err = null;
-        });
-      }, onError: (Object err) {
-        if (!mounted) return;
-        print('got err: $err');
-        setState(() {
-          _latestUri = Uri.parse(null.toString());
-          if (err is FormatException) {
-            _err = err;
-          } else {
-            _err = null;
-          }
-        });
-      });
-    }
-  }
+  // Future<void> _handleInitialUri() async {
+  //   if (!_initialUriIsHandled) {
+  //     _initialUriIsHandled = true;
+  //     try {
+  //       final uri = await getInitialUri();
+  //       if (uri != null) {
+  //         String linkStr = uri.toString();
+  //         if (linkStr.contains('code') &&
+  //             uri.toString().contains("https://richardepitech.com")) {
+  //           var code = linkStr.split('code=')[1].split('&')[0];
+  //           print(code);
+  //           await red.auth.authorize(code);
+  //           var accessToken = red.auth.credentials.accessToken;
+  //           const storage = FlutterSecureStorage();
+  //           await storage.write(key: 'token', value: accessToken.toString());
+  //           _sub.cancel();
+  //           print(accessToken);
+  //           Navigator.pushNamed(context, '/home');
+  //         }
+  //       }
+  //       if (!mounted) return;
+  //     } catch (err) {
+  //       if (!mounted) return;
+  //     }
+  //   }
+  // }
+  // void _handleIncomingLinks() {
+  //   if (!kIsWeb) {
+  //     _sub = uriLinkStream.listen((Uri? uri) {
+  //       if (!mounted) return;
+  //     }, onError: (Object err) {
+  //       if (!mounted) return;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

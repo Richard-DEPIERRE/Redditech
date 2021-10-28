@@ -14,10 +14,11 @@ func SetupRouter() *gin.Engine {
 		c.String(http.StatusOK, "Welcome to Redditech API")
 	})
 
-	router.GET("/get/r/fieds", GetNewsFied)
-	router.POST("/get/access_token", getToken)
-	router.POST("/ping/get_access_token", getAccessToken)
 	router.GET("/get/subreddits", getSubreddits)
+	router.Use(AuthMiddleware)
+	router.GET("/get/me", aboutMe)
+	router.GET("/get/suberredit/list", getListSubreddit)
+	router.GET("/get/suberredit/about", getSuberedditAbout)
 
 	return router
 }
