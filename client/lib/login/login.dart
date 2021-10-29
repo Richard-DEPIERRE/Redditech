@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:redditech/home/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
@@ -39,7 +40,13 @@ class _LoginComponentState extends State<LoginComponent> {
       await red.auth.authorize(code.toString());
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.setString('access_token', red.auth.credentials.accessToken);
-      Navigator.pushNamed(context, '/home');
+      print(red.auth.credentials.accessToken);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeComponent(title: 'Best'),
+        )
+      );
     } catch(err) {
       print(err);
     }
