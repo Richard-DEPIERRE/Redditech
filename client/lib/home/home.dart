@@ -228,89 +228,6 @@ class HomeReddit extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.fromLTRB(23, 10, 0, 0),
-          //   child: SizedBox(
-          //     width: width * 0.888,
-          //     child: Card(
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(15.0),
-          //       ),
-          //       child: Row(
-          //         children: [
-          //           Card(
-          //             shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(15.0),
-          //             ),
-          //             color: Color.fromRGBO(255, 69, 0, 1),
-          //             child: Padding(
-          //               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-          //               child: const Text(
-          //                 "Best",
-          //                 style: TextStyle(
-          //                   fontSize: 18,
-          //                   fontWeight: FontWeight.w700,
-          //                   color: Colors.white
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //           Card(
-          //             shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(15.0),
-          //             ),
-          //             color: Colors.white,
-          //             child: Padding(
-          //               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-          //               child: const Text(
-          //                 "Hot",
-          //                 style: TextStyle(
-          //                   fontSize: 18,
-          //                   fontWeight: FontWeight.w700,
-          //                   color: Color.fromRGBO(165, 165, 165, 1)
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //           Card(
-          //             shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(15.0),
-          //             ),
-          //             color: Colors.white,
-          //             child: Padding(
-          //               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-          //               child: const Text(
-          //                 "new",
-          //                 style: TextStyle(
-          //                   fontSize: 18,
-          //                   fontWeight: FontWeight.w700,
-          //                   color: Color.fromRGBO(165, 165, 165, 1)
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //           Card(
-          //             shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(15.0),
-          //             ),
-          //             color: Colors.white,
-          //             child: Padding(
-          //               padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-          //               child: const Text(
-          //                 "Random",
-          //                 style: TextStyle(
-          //                   fontSize: 18,
-          //                   fontWeight: FontWeight.w700,
-          //                   color: Color.fromRGBO(165, 165, 165, 1)
-          //                 ),
-          //               ),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Container(
             height: height * 0.87,
             child: ListView(
@@ -394,8 +311,8 @@ class SubredditSearch extends SearchDelegate<String> {
           var queryText = "";
           var remainingText = "";
           if (suggestion['name'] != null) {
-            queryText = suggestion['name'].substring(0, query.length + 1);
-            remainingText = suggestion['name'].substring(query.length + 1);
+            queryText = suggestion['name'].substring(0, query.length + 2);
+            remainingText = suggestion['name'].substring(query.length + 2);
           } else {
             queryText = "";
             remainingText = "";
