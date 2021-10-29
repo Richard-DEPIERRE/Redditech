@@ -22,8 +22,9 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => const LoginComponent(),
-        '/home': (context) => const HomeComponent(),
+        '/home': (context) => const HomeComponent(title: 'Best',),
         '/profil': (context) => const ProfilComponent(),
+        '/subreddit': (context) => const SubRedditComponent(),
       },
     );
   }
