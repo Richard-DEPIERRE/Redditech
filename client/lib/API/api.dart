@@ -38,6 +38,66 @@ Future<List<Map<String, dynamic>>> getAutocomplete({query = "a"}) async {
   return res;
 }
 
+Future<Map<String, dynamic>> getUser() async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('access_token');
+  String url = "https://oauth.reddit.com/api/v1/me";
+  http.Response response = await http.get(
+    Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'User-Agent': 'EpitechRed:1234:1.0 (by /u/uichaa>)',
+      'Authorization': 'Bearer $token',
+    }
+  );
+  String urlSettings = "https://oauth.reddit.com/api/v1/me/prefs";
+  http.Response responseSettings = await http.get(
+    Uri.parse(urlSettings),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'User-Agent': 'EpitechRed:1234:1.0 (by /u/uichaa>)',
+      'Authorization': 'Bearer $token',
+    }
+  );
+  Map jsonBodySettings = jsonDecode(responseSettings.body);
+  var datasSettings = jsonBodySettings;
+  Map jsonBody = jsonDecode(response.body);
+  var datas = jsonBody;
+  Map<String, dynamic> res = {
+    "avatar": datas['snoovatar_img'],
+    "name": datas['subreddit']['title'],
+    "description": datas['subreddit']['public_description'],
+    "subscribers": datas['subreddit']['subscribers'],
+    "friends": datas['num_friends'],
+    "coins": datas['coins'],
+    "nightmode": datasSettings['nightmode'],
+    "email_private_message": datasSettings['email_private_message'],
+    "over_18": datasSettings['over_18'],
+    "search_include_over_18": datasSettings['search_include_over_18'],
+    "enable_followers": datasSettings['enable_followers'],
+    "email_user_new_follower": datasSettings['email_user_new_follower'],
+  };
+  return res;
+}
+
+Future<void> changeSettings(bool change, String name) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('access_token');
+  String url = "https://oauth.reddit.com/api/v1/me/prefs";
+  var send = Map<String, dynamic>();
+  send[name] = change;
+  await http.patch(
+    Uri.parse(url),
+    headers: {
+      'User-Agent': 'Redditech:1234:1.0 (by /u/RichiePo99>)',
+      'Authorization': 'Bearer $token',
+    },
+    body: json.encode(send)
+  );
+}
+
 Future<Map<String, dynamic>> getSubReddit(query) async {
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('access_token');
