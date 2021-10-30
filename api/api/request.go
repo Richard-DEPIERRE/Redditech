@@ -57,3 +57,20 @@ func (r *Request) sendRequest() (map[string]interface{}, error) {
 	json.Unmarshal(bodyResp, &bodyJson)
 	return bodyJson, nil
 }
+
+var CreateRequestTest = func (
+	url string,
+	reqType string,
+	body map[string]interface{},
+	token string,
+) (Request, error) {
+	var req Request
+	var err error
+
+	req.createRequest(url, reqType, body, token)
+	return req, err
+}
+
+var SendRequestTest = func (req Request) (map[string]interface{}, error) {
+	return req.sendRequest()
+}
