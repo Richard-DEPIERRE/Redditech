@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -57,4 +58,86 @@ func getSubredditsAPI(body *bodyRequestSubreddits) ([]byte, error) {
 	defer resp.Body.Close()
 	bodyData, _ = io.ReadAll(resp.Body)
 	return bodyData, nil
+}
+
+// Get hot subreddits
+func getHots(c *gin.Context) {
+	var body map[string]interface{}
+	var bodyClient map[string]interface{}
+
+	jsonData, _ := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(jsonData, &bodyClient)
+
+	token := bodyClient["token"].(string)
+
+	var request Request
+	err := request.createRequest(
+		"https://oauth.reddit.com/hot",
+		"GET",
+		body,
+		token,
+	)
+	if err != nil {
+		c.JSON(401, &ErrorResponse{
+			ErrorMessage: err.Error(),
+			Code:         403,
+		})
+	}
+	resp, _ := request.sendRequest()
+	c.JSON(200, resp)
+}
+
+// Get tendances
+func getBests(c *gin.Context) {
+	var body map[string]interface{}
+	var bodyClient map[string]interface{}
+
+	jsonData, _ := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(jsonData, &bodyClient)
+
+	token := bodyClient["token"].(string)
+
+	var request Request
+	err := request.createRequest(
+		"https://oauth.reddit.com/best",
+		"GET",
+		body,
+		token,
+	)
+	if err != nil {
+		c.JSON(401, &ErrorResponse{
+			ErrorMessage: err.Error(),
+			Code:         403,
+		})
+	}
+	resp, _ := request.sendRequest()
+	c.JSON(200, resp)
+}
+
+// Get new subreddits
+func getNews(c *gin.Context) {
+	var body map[string]interface{}
+	var bodyClient map[string]interface{}
+
+	jsonData, _ := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(jsonData, &bodyClient)
+
+	token := bodyClient["token"].(string)
+
+	var request Request
+	err := request.createRequest(
+		"https://oauth.reddit.com/new",
+		"GET",
+		body,
+		token,
+	)
+	if err != nil {
+		c.JSON(401, &ErrorResponse{
+			ErrorMessage: err.Error(),
+			Code:         403,
+		})
+	}
+	resp, _ := request.sendRequest()
+	
+	c.JSON(200, resp)
 }
