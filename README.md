@@ -48,3 +48,19 @@ after=TIMESTAMP (optional)
 before=TIMESTAMP (optional)
 size=NUMBER (number of data in array)
 ```
+
+## How to build and install Front
+
+##### With flutter in terminal :
+
+```bash
+cd client
+```
+
+```bash
+flutter pub get
+```
+
+```bash
+flutter run
+```
