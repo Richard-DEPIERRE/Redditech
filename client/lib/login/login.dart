@@ -5,12 +5,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:redditech/home/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-bool _initialUriIsHandled = false;
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class LoginComponent extends StatefulWidget {
   const LoginComponent({Key? key}) : super(key: key);
@@ -20,9 +18,7 @@ class LoginComponent extends StatefulWidget {
 }
 
 class _LoginComponentState extends State<LoginComponent> {
-  final FlutterAppAuth appAuth = FlutterAppAuth();
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
-  late StreamSubscription _sub;
   var red = Reddit.createInstalledFlowInstance(
     clientId: "wN2TD0vUX0aKLgvR_aPFxw",
     redirectUri: Uri.parse("foobar://sucess"),
@@ -33,21 +29,16 @@ class _LoginComponentState extends State<LoginComponent> {
     try {
       final authUrl = red.auth.url(["*"], "EpitechRed2");
       final result = await FlutterWebAuth.authenticate(url: authUrl.toString(), callbackUrlScheme: "foobar");
-      print(result);
       String? code = Uri.parse(result).queryParameters['code'];
       const storage = FlutterSecureStorage();
       await storage.write(key: 'code', value: code.toString());
       await red.auth.authorize(code.toString());
       final prefs = await SharedPreferences.getInstance();
-      final token = prefs.setString('access_token', red.auth.credentials.accessToken);
+      await prefs.setString('access_token', red.auth.credentials.accessToken);
       print(red.auth.credentials.accessToken);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomeComponent(title: 'Best'),
-        )
-      );
+      Navigator.pushNamed(context, '/home');
     } catch(err) {
+      // ignore: avoid_print
       print(err);
     }
   }
@@ -55,68 +46,17 @@ class _LoginComponentState extends State<LoginComponent> {
   @override
   void initState() {
     super.initState();
-    // _handleIncomingLinks();
-    // _handleInitialUri();
   }
 
   @override
   void dispose() {
-    _sub.cancel();
     super.dispose();
   }
-  // void loginAction() async {
-  //   try {
-  //     const url = "https://www.reddit.com/api/v1/authorize?response_type=token&client_id=wN2TD0vUX0aKLgvR_aPFxw&redirect_uri=https://richardepitech.com&scope=identity,read,account,creddits,edit,flair,history,livemanage,modconfig,report,save,submit,subscribe,vote&state=https";
-  //     if (await canLaunch(url)) {
-  //       await launch(url);
-  //     } else {
-  //       throw "Could not launch $url";
-  //     }
-  //   } catch(err) {
-  //     // ignore: avoid_print
-  //     print(err);
-  //   }
-  // }
-
-  // Future<void> _handleInitialUri() async {
-  //   if (!_initialUriIsHandled) {
-  //     _initialUriIsHandled = true;
-  //     try {
-  //       final uri = await getInitialUri();
-  //       if (uri != null) {
-  //         String linkStr = uri.toString();
-  //         if (linkStr.contains('code') &&
-  //             uri.toString().contains("https://richardepitech.com")) {
-  //           var code = linkStr.split('code=')[1].split('&')[0];
-  //           print(code);
-  //           await red.auth.authorize(code);
-  //           var accessToken = red.auth.credentials.accessToken;
-  //           const storage = FlutterSecureStorage();
-  //           await storage.write(key: 'token', value: accessToken.toString());
-  //           _sub.cancel();
-  //           print(accessToken);
-  //           Navigator.pushNamed(context, '/home');
-  //         }
-  //       }
-  //       if (!mounted) return;
-  //     } catch (err) {
-  //       if (!mounted) return;
-  //     }
-  //   }
-  // }
-  // void _handleIncomingLinks() {
-  //   if (!kIsWeb) {
-  //     _sub = uriLinkStream.listen((Uri? uri) {
-  //       if (!mounted) return;
-  //     }, onError: (Object err) {
-  //       if (!mounted) return;
-  //     });
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: hello(),
       floatingActionButton: SizedBox(
         height: 100.0,

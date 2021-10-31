@@ -86,7 +86,7 @@ class _HomeCards extends State<HomeCards> {
                 ),
               ),
               subtitle: Text(
-                "u/"+ widget.author +" • "+ widget.date,
+                widget.author +" • "+ widget.date,
                 style: const TextStyle(
                   color: Colors.grey,
                 ),
