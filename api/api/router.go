@@ -33,6 +33,13 @@ func SetupRouter() *gin.Engine {
 	router.GET("get/best", getBests)
 	// Action API
 	router.POST("/action/suberredit/follow")
+	// Uer API
+	router.GET("/user/trophies", aboutUserTrophies)
+	router.GET("/user/about", aboutUserAbout)
+	router.GET("/user/submit", userSubmit)
+	router.GET("/user/overview", userOverview)
+	router.GET("/user/comment", userComment)
+	router.GET("/user/hidden", userHidden)
 
 	return router
 }
