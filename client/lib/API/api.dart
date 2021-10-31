@@ -98,7 +98,8 @@ Future<void> changeSettings(bool change, String name) async {
   );
 }
 
-Future<Map<String, dynamic>> getSubReddit(query) async {
+Future<Map<String, dynamic>> getSubReddit(String query, String type) async {
+  type = type.toLowerCase();
   final prefs = await SharedPreferences.getInstance();
   final token = prefs.getString('access_token');
   String url = "https://oauth.reddit.com/" + query + "/about";
@@ -111,7 +112,8 @@ Future<Map<String, dynamic>> getSubReddit(query) async {
       'Authorization': 'Bearer $token',
     }
   );
-  String urlBody = "https://oauth.reddit.com/" + query;
+  String urlBody = "https://oauth.reddit.com/" + query + "/" + type;
+  print(urlBody);
   http.Response responseBody = await http.get(
     Uri.parse(urlBody),
     headers: {
