@@ -23,11 +23,23 @@ func SetupRouter() *gin.Engine {
 	router.GET("/get/me", aboutMe)
 	router.GET("/get/me/friends", getFriends)
 	router.GET("/get/me/trophies", getTrophies)
+	router.GET("/get/blocked", getBlocked)
+	router.GET("/get/messages", getMessaging)
 	// subreddit routes
 	router.GET("/get/suberredit/list", getListSubreddit)
 	router.GET("/get/suberredit/about", getSuberedditAbout)
+	router.GET("get/new", getNews)
+	router.GET("get/hot", getHots)
+	router.GET("get/best", getBests)
 	// Action API
 	router.POST("/action/suberredit/follow")
+	// Uer API
+	router.GET("/user/trophies", aboutUserTrophies)
+	router.GET("/user/about", aboutUserAbout)
+	router.GET("/user/submit", userSubmit)
+	router.GET("/user/overview", userOverview)
+	router.GET("/user/comment", userComment)
+	router.GET("/user/hidden", userHidden)
 
 	return router
 }
