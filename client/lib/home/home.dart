@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:redditech/API/api.dart';
-import 'package:redditech/Subreddit/subreddit.dart';
 import 'package:redditech/shared/cards.dart';
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 class HomeComponent extends StatefulWidget {
-  const HomeComponent({Key? key, required this.title}) : super(key: key);
+  const HomeComponent({Key? key, this.title = 'Best'}) : super(key: key);
   final String title;
 
   @override
@@ -14,230 +15,198 @@ class HomeComponent extends StatefulWidget {
 }
 
 class _HomeComponentState extends State<HomeComponent> {
-
+  String title = "Best";
+  void changeState(String state) {
+    print(state);
+    setState(() {
+      title = state;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: getHome(widget.title),
+      future: getHome(title),
       builder: (context, snapshot) {
         switch(snapshot.connectionState) {
           case ConnectionState.waiting:
-            return const Center(child: CircularProgressIndicator(),);
+            return Container(
+              color: Colors.white,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           default:
-            return HomeReddit(height: height, width: width, title: widget.title, subreddit: snapshot.data);
+            List<Widget> test1 = [
+              Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 23, 0),
+                    child: SizedBox(
+                      width: width * 0.888,
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        child: Row(
+                          children: [
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              color: (title == "Best") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
+                                child: TextButton(
+                                  onPressed: () => changeState("Best"),
+                                  child: Text(
+                                    "Best",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: (title == "Best") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              color: (title == "Hot") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
+                                child: TextButton(
+                                  onPressed: () => changeState("Hot"),
+                                  child: Text(
+                                    "Hot",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: (title == "Hot") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              color: (title == "New") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
+                                child: TextButton(
+                                  onPressed: () => changeState("New"),
+                                  child: Text(
+                                    "New",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: (title == "New") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              color: (title == "Top") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
+                                child: TextButton(
+                                  onPressed: () => changeState("Top"),
+                                  child: Text(
+                                    "Top",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      color: (title == "Top") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+            ];
+            List<Widget> cards = List<Widget>.from(test1)..addAll(List<Widget>.generate(snapshot.data!.length, (i) =>
+              HomeCards(
+                author: snapshot.data![i]['author'],
+                date: snapshot.data![i]['date'],
+                subreddit: snapshot.data![i]['subreddit'],
+                title: snapshot.data![i]['title'],
+                media: snapshot.data![i]['media'],
+                type: snapshot.data![i]['type']
+              )
+            ));
+            final LocalStorage storage = LocalStorage('redditech');
+            return Scaffold(
+              key: _scaffoldKey,
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                centerTitle: false,
+                leading: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/profil');
+                    },
+                    child: const CircleAvatar(
+                      radius: 20,
+                      backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
+                      backgroundColor: Colors.grey,
+                    ),
+                  ),
+                ),
+                title: const Text(
+                  "Home",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0.0, 10.0, 20.0, 10.0),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.search,
+                        color: Colors.black,
+                        size: 30,
+                      ),
+                      tooltip: 'Search',
+                      onPressed: () async {
+                          final res = await getAutocomplete();
+                          final result = await showSearch(
+                              context: context, delegate: SubredditSearch(subRedditList: res));
+                          storage.setItem('subreddit', result.toString());
+                          Navigator.pushNamed(context, '/subreddit');
+                        },
+                    ),
+                  )
+                ],
+              ),
+              body: Column(
+                children: [
+                  Container(
+                    height: height * 0.84,
+                    child: ListView(
+                      children: cards,
+                    ),
+                  ),
+                ],
+              ),
+            );
+            // return HomeReddit(height: height, width: width, title: widget.title, subreddit: snapshot.data);
         }
     }
   );}
-}
-
-class HomeReddit extends StatelessWidget {
-  const HomeReddit({
-    Key? key,
-    required this.height,
-    required this.width,
-    required this.title,
-    required this.subreddit
-  }) : super(key: key);
-  
-  final double height;
-  final double width;
-  final String title;
-  final List<Map<String, dynamic>>? subreddit;
-
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> test1 = [
-      Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 23, 0),
-            child: SizedBox(
-              width: width * 0.888,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                child: Row(
-                  children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: (title == "Best") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
-                        child: TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeComponent(title: 'Best'),
-                            )
-                          ),
-                          child: Text(
-                            "Best",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: (title == "Best") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: (title == "Hot") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
-                        child: TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeComponent(title: 'Hot'),
-                            )
-                          ),
-                          child: Text(
-                            "Hot",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: (title == "Hot") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: (title == "New") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
-                        child: TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeComponent(title: 'New'),
-                            )
-                          ),
-                          child: Text(
-                            "New",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: (title == "New") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      color: (title == "Top") ? const Color.fromRGBO(255, 69, 0, 1): Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(3, 0, 3, 0),
-                        child: TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeComponent(title: 'Top'),
-                            )
-                          ),
-                          child: Text(
-                            "Top",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: (title == "Top") ? Colors.white : const Color.fromRGBO(165, 165, 165, 1)
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-    ];
-    List<Widget> cards = List<Widget>.from(test1)..addAll(List<Widget>.generate(subreddit!.length, (i) =>
-      HomeCards(
-        author: subreddit![i]['author'],
-        date: subreddit![i]['date'],
-        subreddit: subreddit![i]['subreddit'],
-        title: subreddit![i]['title'],
-        media: subreddit![i]['media'],
-        type: subreddit![i]['type']
-      )
-    ));
-    final LocalStorage storage = LocalStorage('redditech');
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        centerTitle: false,
-        leading: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 0.0, 10.0),
-          child: GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, '/profil');
-            },
-            child: const CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage('https://f.hellowork.com/blogdumoderateur/2015/08/Reddit-alien.png'),
-              backgroundColor: Colors.grey,
-            ),
-          ),
-        ),
-        title: const Text(
-          "Home",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0.0, 10.0, 20.0, 10.0),
-            child: IconButton(
-              icon: const Icon(
-                Icons.search,
-                color: Colors.black,
-                size: 30,
-              ),
-              tooltip: 'Search',
-              onPressed: () async {
-                  final res = await getAutocomplete();
-                  final result = await showSearch(
-                      context: context, delegate: SubredditSearch(subRedditList: res));
-                  storage.setItem('subreddit', result.toString());
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SubRedditComponent(),
-                    )
-                  );
-                },
-            ),
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          Container(
-            height: height * 0.87,
-            child: ListView(
-              children: cards,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 
