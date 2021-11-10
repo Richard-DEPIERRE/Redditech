@@ -1,5 +1,26 @@
 # REDDITECH
 
+![gif](./assets/redditech.gif)
+
+## How to build and install Front
+
+##### With flutter in terminal :
+
+You don't need to build or run the back-end app for use the flutter application
+
+```bash
+cd client
+```
+
+```bash
+flutter pub get
+```
+
+```bash
+flutter run
+```
+
+
 ## How to build API
 
 ##### With docker :
@@ -47,20 +68,4 @@ sort_type=created_utc (by default)
 after=TIMESTAMP (optional)
 before=TIMESTAMP (optional)
 size=NUMBER (number of data in array)
-```
-
-## How to build and install Front
-
-##### With flutter in terminal :
-
-```bash
-cd client
-```
-
-```bash
-flutter pub get
-```
-
-```bash
-flutter run
 ```
