@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the getAutocomplete function from the api library, for the Dart programming language.">
+  <title>getAutocomplete function - api library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">redditech</a></li>
+    <li><a href="../API_api/API_api-library.html">api</a></li>
+    <li class="self-crumb">getAutocomplete function</li>
+  </ol>
+  <div class="self-name">getAutocomplete</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-function">getAutocomplete</span> function 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+ 
+</h1></div>
+
+    <section class="multi-line-signature">
+        
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span>&gt;</span></span>&gt;</span></span>
+<span class="name ">getAutocomplete</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="getAutocomplete-param-query">{<span class="type-annotation">dynamic</span> <span class="parameter-name">query</span> = <span class="default-value">&quot;a&quot;</span>}</span></li>
+</ol>)
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;List&lt;Map&lt;String, dynamic&gt;&gt;&gt; getAutocomplete({query = &quot;a&quot;}) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString(&#39;access_token&#39;);
+  String url = &quot;https:&#47;&#47;oauth.reddit.com&#47;api&#47;subreddit_autocomplete_v2?query=&quot; + query;
+  http.Response response = await http.get(
+    Uri.parse(url),
+    headers: {
+      &#39;Content-Type&#39;: &#39;application&#47;json&#39;,
+      &#39;Accept&#39;: &#39;application&#47;json&#39;,
+      &#39;User-Agent&#39;: &#39;EpitechRed:1234:1.0 (by &#47;u&#47;uichaa&gt;)&#39;,
+      &#39;Authorization&#39;: &#39;Bearer $token&#39;,
+    }
+  );
+  List&lt;Map&lt;String, dynamic&gt;&gt; res = [];
+  Map jsonBody = jsonDecode(response.body);
+  var datas = jsonBody[&quot;data&quot;][&quot;children&quot;];
+  for (int i = 0; i &lt; jsonBody[&#39;data&#39;][&#39;dist&#39;]; i++) {
+    if (datas[i][&#39;kind&#39;] == &quot;t5&quot;) {
+      Map&lt;String, dynamic&gt; obj = {
+        &#39;name&#39;: datas[i][&#39;data&#39;][&#39;display_name_prefixed&#39;],
+        &#39;img&#39;: (datas[i][&#39;data&#39;][&#39;icon_img&#39;] != &#39;&#39; &amp;&amp; datas[i][&#39;data&#39;][&#39;icon_img&#39;] != null) ? datas[i][&#39;data&#39;][&#39;icon_img&#39;] : &quot;https:&#47;&#47;upload.wikimedia.org&#47;wikipedia&#47;fr&#47;thumb&#47;f&#47;fc&#47;Reddit-alien.png&#47;220px-Reddit-alien.png&quot;
+      };
+      res.add(obj);
+    } else if (datas[i][&#39;kind&#39;] == &quot;t2&quot;) {
+      Map&lt;String, dynamic&gt; obj = {
+        &#39;name&#39;: datas[i][&#39;data&#39;][&#39;subreddit&#39;][&quot;display_name_prefixed&quot;],
+        &#39;img&#39;: (datas[i][&#39;data&#39;][&#39;snoovatar_img&#39;] != &#39;&#39;&amp;&amp; datas[i][&#39;data&#39;][&#39;snoovatar_img&#39;] != null) ?  datas[i][&#39;data&#39;][&#39;snoovatar_img&#39;] : &quot;https:&#47;&#47;upload.wikimedia.org&#47;wikipedia&#47;fr&#47;thumb&#47;f&#47;fc&#47;Reddit-alien.png&#47;220px-Reddit-alien.png&quot;
+      };
+      res.add(obj);
+    }
+  }
+  return res;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../index.html">redditech</a></li>
+  <li><a href="../API_api/API_api-library.html">api</a></li>
+  <li class="self-crumb">getAutocomplete function</li>
+</ol>
+
+
+    <h5>api library</h5>
+    <ol>
+
+
+
+
+
+  <li class="section-title"><a href="../API_api/API_api-library.html#functions">Functions</a></li>
+  <li><a href="../API_api/changeSettings.html">changeSettings</a></li>
+  <li><a href="../API_api/changeSubbed.html">changeSubbed</a></li>
+  <li><a href="../API_api/getAutocomplete.html">getAutocomplete</a></li>
+  <li><a href="../API_api/getHome.html">getHome</a></li>
+  <li><a href="../API_api/getSubReddit.html">getSubReddit</a></li>
+  <li><a href="../API_api/getUser.html">getUser</a></li>
+
+
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    redditech
+      1.0.0+1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+
